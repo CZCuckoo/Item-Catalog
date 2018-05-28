@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <meta charset="UTF-8">
+    <title>Item Catalog</title>
+		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+	</head>
+	<body>
+		{% for i in categories %}
+		<div>
+			<p>{{i.name}}</p>
+			<p>{{i.description}}</p>
+		</div>
+		{% endfor %}
+	</body>
+</html>
