@@ -20,7 +20,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
 app = Flask(__name__)
-redis = Redis()
+
+
+
 
 @app.route('/')
 @app.route('/categories')
