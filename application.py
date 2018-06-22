@@ -12,6 +12,9 @@ import string
 import json
 import requests
 
+
+
+
 app = Flask(__name__)
 
 engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thread':False})
@@ -32,34 +35,59 @@ def showCategories():
 def showItems(category_id):
     category = session.query(Category).filter_by(id = category_id).one()
     items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('showitems.html', category = category, items = items)
+    return render_template('showItems.html', category = category, items = items)
 
 
 @app.route('/category/new/', methods=['GET', 'POST'])
 def newCategory():
-    return "page to create a new category."
+    if request.method == 'POST':
+        newCategory = Category(name=request.form['name'], description=request.form['description'])
+        session.add(newCategory)
+        session.commit()
+        return redirect(url_for('showCategories'))
+    else:
+        return render_template('newCategory.html')
+
 
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
-    return "page to edit a category."
+    edited = session.query(Category).filter_by(id=category_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            edited.name = request.form['name']
+        if request.form['description']:
+            edited.description = request.form['description']
+
+        session.add(edited)
+        session.commit()
+        return redirect(url_for('showCategories'))
+    else:
+        return render_template('editCategory.html', category=edited)
 
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
-    return "page to delete a category."
+    categoryToDelete = session.query(Category).filter_by(id= category_id).one()
+    if request.method == 'POST':
+        session.delete(categoryToDelete)
+        session.commit()
+        return redirect(url_for('showCategories', category_id=category_id))
+    else:
+        return render_template('deleteCategory.html', category=categoryToDelete)
+    return render_template('deleteCategory.html')
 
 
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
-    return "page add a new item."
+    return render_template('newItem.html')
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(category_id, item_id):
-    return "page edit an item."
+    return render_template('editItem.html')
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
-    return "page delete an item."
+    return render_template('deleteItem.html')
 
 
 if __name__ == '__main__':

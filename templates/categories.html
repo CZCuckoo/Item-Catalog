@@ -6,11 +6,16 @@
 		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
 	</head>
 	<body>
-		{% for i in categories %}
+		{% for category in categories %}
 		<div>
-			<p>{{i.name}}</p>
-			<p>{{i.description}}</p>
+			<p>{{category.name}}</p>
+			<p>{{category.description}}</p>
+			<a href="{{url_for('showItems', category_id = category.id)}}">Items</a><br>
+			<a href="{{url_for('editCategory', category_id = category.id)}}">Edit Category</a><br>
+			<a href="{{url_for('deleteCategory', category_id = category.id)}}">Delete Category</a><br>
 		</div>
 		{% endfor %}
+		<br>
+		<a href="{{url_for('newCategory')}}">Add a new category</a>
 	</body>
 </html>
