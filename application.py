@@ -79,7 +79,13 @@ def deleteCategory(category_id):
 
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
-    return render_template('newItem.html')
+    if request.method == 'POST':
+        newItem = Item(name=request.form['name'], category_id=category_id)
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('showItems', category_id=category_id))
+    else:
+        return render_template('newItem.html', category_id=category_id)
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(category_id, item_id):
@@ -87,8 +93,14 @@ def editItem(category_id, item_id):
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
-    return render_template('deleteItem.html')
-
+    categoryToDelete = session.query(Category).filter_by(id= category_id).one()
+    itemToDelete = session.query(Item).filter_by(id=item_id, category_id=category_id).first()
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        return redirect(url_for('showItems', category_id=category_id))
+    else:
+        return render_template('deleteItem.html', item=itemToDelete)
 
 if __name__ == '__main__':
     app.debug = True

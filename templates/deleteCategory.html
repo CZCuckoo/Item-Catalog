@@ -10,7 +10,7 @@
       <h2>Delete Category</h2>
 			<h3> Are you sure you want to delete {{category.name}}?</h3>
 			<form action="{{url_for('deleteCategory', category_id = category.id)}}" method = 'post'>
-				<input type='submit' value = 'Delete' class="btn btn-danger">
+				<input type='submit' value = 'Delete'>
 			</form>
 			<a href = "{{url_for('showCategories')}}">Cancel</a>
 
