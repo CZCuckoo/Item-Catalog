@@ -80,7 +80,7 @@ def deleteCategory(category_id):
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
     if request.method == 'POST':
-        newItem = Item(name=request.form['name'], category_id=category_id)
+        newItem = Item(name=request.form['name'], description=request.form['description'],category_id=category_id)
         session.add(newItem)
         session.commit()
         return redirect(url_for('showItems', category_id=category_id))
@@ -89,12 +89,22 @@ def newItem(category_id):
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(category_id, item_id):
-    return render_template('editItem.html')
+    itemToEdit = session.query(Item).filter_by(id=item_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            edited.name = request.form['name']
+        if request.form['description']:
+            edited.description = request.form['description']
+
+        session.add(itemToEdit)
+        session.commit()
+        return redirect(url_for('showItems'))
+    else:
+        return render_template('editItem.html', category_id=category_id)
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
-    categoryToDelete = session.query(Category).filter_by(id= category_id).one()
-    itemToDelete = session.query(Item).filter_by(id=item_id, category_id=category_id).first()
+    itemToDelete = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
