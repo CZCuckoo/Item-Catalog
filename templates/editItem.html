@@ -8,13 +8,13 @@
 	<body>
 		<div>
       <h2>Edit Item</h2>
-			<form action="{{url_for('editItem', category_id=category_id, item=item.id)}}" method = 'POST'>
+			<form action="{{url_for('editItem', category_id=category_id, item_id=item.id)}}" method = 'POST'>
             <p>Name:</p>
                 <input type="text" name="name" placeholder="{{item.name}}" required><br>
 						<p>Description:</p>
 								<textarea name="description", placeholder="{{item.description}}"></textarea><br>
                 <input type='submit' value='Edit' class="btn btn-warning">
-            <a href = "{{url_for('showCategories')}}"> Cancel </a>
+            <a href = "{{url_for('showCategories', category_id=item.category_id)}}">Cancel </a>
         </form>
 
 

@@ -51,18 +51,18 @@ def newCategory():
 
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
-    edited = session.query(Category).filter_by(id=category_id).one()
+    editedCategory = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
         if request.form['name']:
-            edited.name = request.form['name']
+            editedCategory.name = request.form['name']
         if request.form['description']:
-            edited.description = request.form['description']
+            editedCategory.description = request.form['description']
 
-        session.add(edited)
+        session.add(editedCategory)
         session.commit()
         return redirect(url_for('showCategories'))
     else:
-        return render_template('editCategory.html', category=edited)
+        return render_template('editCategory.html', category=editedCategory)
 
 
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
@@ -92,15 +92,14 @@ def editItem(category_id, item_id):
     itemToEdit = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         if request.form['name']:
-            edited.name = request.form['name']
+            itemToEdit.name = request.form['name']
         if request.form['description']:
-            edited.description = request.form['description']
-
+            itemToEdit.description = request.form['description']
         session.add(itemToEdit)
         session.commit()
-        return redirect(url_for('showItems'))
+        return redirect(url_for('showItems', category_id=category_id))
     else:
-        return render_template('editItem.html', category_id=category_id)
+        return render_template('editItem.html', category_id=category_id, item_id=item_id, item=itemToEdit)
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
