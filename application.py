@@ -12,18 +12,22 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User_info, Category, Item
 
+# Imports to create a random string for the login session
 from flask import session as login_session
-
 import random
 import string
 
+# Creates a flow object from the client secrets JSON file
 from oauth2client.client import flow_from_clientsecrets
+# Handles errors trying to exchange authorization codes for tokens
 from oauth2client.client import FlowExchangeError
 import httplib2
 import json
 from flask import make_response
 import requests
 
+# Client ID: 929908741189-mb1fncqv8dt044dmacume9t5plin9167.apps.googleusercontent.com
+# Client Secret: fMp2Fd1PPUnXGfplG5tZoV1p
 
 app = Flask(__name__)
 
@@ -31,6 +35,22 @@ engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thr
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+
+#______________________________________________________________________________
+# Oauth routes
+#______________________________________________________________________________
+
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
+
+
+
+
+
 
 #______________________________________________________________________________
 # Category routes
@@ -133,5 +153,6 @@ def deleteItem(category_id, item_id):
         return render_template('deleteItem.html', item=itemToDelete)
 
 if __name__ == '__main__':
+    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host = '0.0.0.0', port=8000)
