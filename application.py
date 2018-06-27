@@ -1,43 +1,50 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask import make_response, jsonify
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    jsonify
+)
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User_info, Category, Item
+
 from flask import session as login_session
+
+import random
+import string
+
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
-import random
-import string
 import json
+from flask import make_response
 import requests
-
-
 
 
 app = Flask(__name__)
 
 engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thread':False})
-
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
-app = Flask(__name__)
 
+#______________________________________________________________________________
+# Category routes
+#______________________________________________________________________________
+
+
+# Show all categories
 @app.route('/')
 @app.route('/categories')
 def showCategories():
     categories = session.query(Category).all()
     return render_template('categories.html', categories = categories)
 
-@app.route('/category/<int:category_id>/')
-@app.route('/category/<int:category_id>/items/')
-def showItems(category_id):
-    category = session.query(Category).filter_by(id = category_id).one()
-    items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('showItems.html', category = category, items = items)
-
-
+# Create a new cateogry
 @app.route('/category/new/', methods=['GET', 'POST'])
 def newCategory():
     if request.method == 'POST':
@@ -48,7 +55,7 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
-
+# Edit an existing category
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
     editedCategory = session.query(Category).filter_by(id=category_id).one()
@@ -64,7 +71,7 @@ def editCategory(category_id):
     else:
         return render_template('editCategory.html', category=editedCategory)
 
-
+# Delete a cateogry
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     categoryToDelete = session.query(Category).filter_by(id= category_id).one()
@@ -76,7 +83,19 @@ def deleteCategory(category_id):
         return render_template('deleteCategory.html', category=categoryToDelete)
     return render_template('deleteCategory.html')
 
+#______________________________________________________________________________
+# Item routes
+#______________________________________________________________________________
 
+# Show all items in a specific category
+@app.route('/category/<int:category_id>/')
+@app.route('/category/<int:category_id>/items/')
+def showItems(category_id):
+    category = session.query(Category).filter_by(id = category_id).one()
+    items = session.query(Item).filter_by(category_id = category_id).all()
+    return render_template('showItems.html', category = category, items = items)
+
+# Create a new item within a category
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
     if request.method == 'POST':
@@ -87,6 +106,7 @@ def newItem(category_id):
     else:
         return render_template('newItem.html', category_id=category_id)
 
+# Edit an item within a category
 @app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(category_id, item_id):
     itemToEdit = session.query(Item).filter_by(id=item_id).one()
@@ -101,6 +121,7 @@ def editItem(category_id, item_id):
     else:
         return render_template('editItem.html', category_id=category_id, item_id=item_id, item=itemToEdit)
 
+# Delete an item in a category
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
