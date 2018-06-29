@@ -32,11 +32,14 @@ from flask import make_response
 # Apache 2 license HTTPlibrary written in Python
 import requests
 
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+GOOGLE_CLIENT_ID = json.loads(
+    open('google_client_secret.json', 'r').read())['web']['client_id']
+GOOGLE_APP_NAME = "Item Catalog"
 
 # Client ID: 929908741189-mb1fncqv8dt044dmacume9t5plin9167.apps.googleusercontent.com
 # Client Secret: fMp2Fd1PPUnXGfplG5tZoV1p
+# https://console.developers.google.com/apis/credentials/oauthclient/
+
 
 app = Flask(__name__)
 
@@ -44,6 +47,8 @@ engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thr
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+
+
 
 #______________________________________________________________________________
 # Oauth routes
@@ -71,7 +76,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('google_client_secret.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -101,20 +106,18 @@ def gconnect():
         return response
 
     # Verify that the access token is valid for this app.
-    if result['issued_to'] != CLIENT_ID:
+    if result['issued_to'] != GOOGLE_CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
         print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    stored_credentials = login_session.get('credentials')
+    stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
-    if stored_credentials is not None and gplus_id == stored_gplus_id:
-        login_session['credentials'] = credentials
-        response = make_response(json.dumps(
-                                 'Current user is already connected.'),
-                                 200)
+    if stored_access_token is not None and gplus_id == stored_gplus_id:
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
