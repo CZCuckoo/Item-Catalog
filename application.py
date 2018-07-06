@@ -182,6 +182,31 @@ def gdisconnect():
         return response
 
 
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User_info).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+
+
 #______________________________________________________________________________
 # Category routes
 #______________________________________________________________________________
@@ -192,7 +217,10 @@ def gdisconnect():
 @app.route('/categories')
 def showCategories():
     categories = session.query(Category).all()
-    return render_template('categories.html', categories = categories)
+    if 'username' not in login_session:
+        return render_template('publiccategories.html', categories = categories)
+    else:
+        return render_template('categories.html', categories = categories)
 
 # Create a new cateogry
 @app.route('/category/new/', methods=['GET', 'POST'])
@@ -242,8 +270,13 @@ def deleteCategory(category_id):
 @app.route('/category/<int:category_id>/items/')
 def showItems(category_id):
     category = session.query(Category).filter_by(id = category_id).one()
+    creator = getUserInfo(category.user_id)
     items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('showItems.html', category = category, items = items)
+    # if 'username' not in login_session or category.user_id != login_session['user_id']:
+    if 'username' not in login_session:
+        return render_template('publicshowItems.html', category = category, items = items)
+    else:
+        return render_template('showItems.html', category = category, items = items)
 
 # Create a new item within a category
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
@@ -281,6 +314,10 @@ def deleteItem(category_id, item_id):
         return redirect(url_for('showItems', category_id=category_id))
     else:
         return render_template('deleteItem.html', item=itemToDelete)
+
+
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
