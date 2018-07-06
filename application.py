@@ -40,6 +40,9 @@ GOOGLE_APP_NAME = "Item Catalog"
 # Client Secret: fMp2Fd1PPUnXGfplG5tZoV1p
 # https://console.developers.google.com/apis/credentials/oauthclient/
 
+# Facebook Client Secret: d34fc4fd46fc7cbb25574ffb1271c130
+# Facebook App ID: 1621634007958501
+
 
 app = Flask(__name__)
 
@@ -59,6 +62,7 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
+    # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
 #______________________________________________________________________________
@@ -83,7 +87,7 @@ def gconnect():
         response = make_response(
             json.dumps('Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
-    return response
+        return response
 
     # Check that the access token is valid.
     access_token = credentials.access_token
@@ -147,10 +151,35 @@ def gconnect():
     print("done!")
     return output
 
-
-
-
-
+@app.route('/gdisconnect')
+def gdisconnect():
+    access_token = login_session.get('access_token')
+    if access_token is None:
+        print('Access Token is None')
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    print('In gdisconnect access token is %s'), access_token
+    print('User name is: ')
+    print(login_session['username'])
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print('result is ')
+    print(result)
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return redirect(url_for('showCategories'))
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 #______________________________________________________________________________
