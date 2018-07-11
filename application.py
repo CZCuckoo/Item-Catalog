@@ -40,10 +40,6 @@ GOOGLE_APP_NAME = "Item Catalog"
 # Client Secret: fMp2Fd1PPUnXGfplG5tZoV1p
 # https://console.developers.google.com/apis/credentials/oauthclient/
 
-# Facebook Client Secret: d34fc4fd46fc7cbb25574ffb1271c130
-# Facebook App ID: 1621634007958501
-
-
 app = Flask(__name__)
 
 engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thread':False})
@@ -180,6 +176,26 @@ def gdisconnect():
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
+
+
+#______________________________________________________________________________
+# JSON routes
+#______________________________________________________________________________
+
+
+# Show all items in a category in JSON
+@app.route('/category/<int:category_id>/items/JSON')
+def ItemsJSON(category_id):
+    category = session.query(Category).filter_by(id = category_id).one()
+    items = session.query(Item).filter_by(category_id = category_id).all()
+    return jsonify(Items=[i.serialize for i in items])
+
+
+# Show all categories in JSON
+@app.route('/categories/JSON')
+def categoriesJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[c.serialize for c in categories])
 
 
 #______________________________________________________________________________
