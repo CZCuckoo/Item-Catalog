@@ -27,7 +27,7 @@ from oauth2client.client import FlowExchangeError
 import httplib2
 # API for converting in memory python objects to a serialized representation
 import json
-#converts return value from function to a real response object
+# converts return value from function to a real response object
 from flask import make_response
 # Apache 2 license HTTPlibrary written in Python
 import requests
@@ -36,22 +36,18 @@ GOOGLE_CLIENT_ID = json.loads(
     open('google_client_secret.json', 'r').read())['web']['client_id']
 GOOGLE_APP_NAME = "Item Catalog"
 
-# Client ID: 929908741189-mb1fncqv8dt044dmacume9t5plin9167.apps.googleusercontent.com
-# Client Secret: fMp2Fd1PPUnXGfplG5tZoV1p
-# https://console.developers.google.com/apis/credentials/oauthclient/
-
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///itemcatalog.db', connect_args={'check_same_thread':False})
+engine = create_engine('sqlite:///itemcatalog.db',
+                        connect_args={'check_same_thread': False})  # NOQA
 Base.metadata.bind = engine
-DBSession = sessionmaker(bind = engine)
+DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-
-
-#______________________________________________________________________________
+# ______________________________________________________________________________
 # Oauth routes
-#______________________________________________________________________________
+# ______________________________________________________________________________
+
 
 @app.route('/login')
 def showLogin():
@@ -61,9 +57,10 @@ def showLogin():
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
-#______________________________________________________________________________
+# ______________________________________________________________________________
 # Google Login
-#______________________________________________________________________________
+# ______________________________________________________________________________
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -76,7 +73,8 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('google_client_secret.json', scope='')
+        oauth_flow = flow_from_clientsecrets('google_client_secret.json',
+            scope='')  # NOQA
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -142,23 +140,25 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '  # NOQA
     flash("you are now logged in as %s" % login_session['username'])
     print("done!")
     return output
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
         print('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user not connected.'),
+                                401)  # NOQA
         response.headers['Content-Type'] = 'application/json'
         return response
     print('In gdisconnect access token is %s'), access_token
     print('User name is: ')
     print(login_session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'% login_session['access_token']  # NOQA
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -173,34 +173,34 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return redirect(url_for('showCategories'))
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps
+                    ('Failed to revoke token for given user.', 400))  # NOQA
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
-#______________________________________________________________________________
+# ______________________________________________________________________________
 # JSON routes
-#______________________________________________________________________________
+# ______________________________________________________________________________
 
 
 # Show all items in a category in JSON
 @app.route('/category/<int:category_id>/items/JSON')
 def ItemsJSON(category_id):
-    category = session.query(Category).filter_by(id = category_id).one()
-    items = session.query(Item).filter_by(category_id = category_id).all()
+    category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
-
 # Show all categories in JSON
+
+
 @app.route('/categories/JSON')
 def categoriesJSON():
     categories = session.query(Category).all()
     return jsonify(categories=[c.serialize for c in categories])
 
-
-#______________________________________________________________________________
+# ______________________________________________________________________________
 # Category routes
-#______________________________________________________________________________
+# ______________________________________________________________________________
 
 
 # Show all categories
@@ -208,13 +208,19 @@ def categoriesJSON():
 @app.route('/categories')
 def showCategories():
     categories = session.query(Category).all()
-    return render_template('categories.html', categories = categories)
+    if 'username' not in login_session:
+        return render_template('publiccategories.html', categories = categories)
+    else:
+        return render_template('categories.html', categories = categories)
 
 # Create a new cateogry
+
+
 @app.route('/category/new/', methods=['GET', 'POST'])
 def newCategory():
     if request.method == 'POST':
-        newCategory = Category(name=request.form['name'], description=request.form['description'])
+        newCategory = Category(name=request.form['name'],
+            description=request.form['description'])  # NOQA
         session.add(newCategory)
         session.commit()
         return redirect(url_for('showCategories'))
@@ -222,6 +228,8 @@ def newCategory():
         return render_template('newCategory.html')
 
 # Edit an existing category
+
+
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
     editedCategory = session.query(Category).filter_by(id=category_id).one()
@@ -238,34 +246,48 @@ def editCategory(category_id):
         return render_template('editCategory.html', category=editedCategory)
 
 # Delete a cateogry
+
+
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
-    categoryToDelete = session.query(Category).filter_by(id= category_id).one()
+    categoryToDelete = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
         return redirect(url_for('showCategories', category_id=category_id))
     else:
-        return render_template('deleteCategory.html', category=categoryToDelete)
+        return render_template('deleteCategory.html',
+                                category=categoryToDelete)  # NOQA
     return render_template('deleteCategory.html')
 
-#______________________________________________________________________________
+# ______________________________________________________________________________
 # Item routes
-#______________________________________________________________________________
+# ______________________________________________________________________________
+
 
 # Show all items in a specific category
 @app.route('/category/<int:category_id>/')
 @app.route('/category/<int:category_id>/items/')
 def showItems(category_id):
     category = session.query(Category).filter_by(id = category_id).one()
+    creator = getUserInfo(category.user_id)
     items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('showItems.html', category = category, items = items)
+
+    # if 'username' not in login_session or category.user_id != login_session['user_id']:
+    if 'username' not in login_session:
+        return render_template('publicshowItems.html', category = category, items = items)
+    else:
+        return render_template('showItems.html', category = category, items = items)
 
 # Create a new item within a category
+
+
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
     if request.method == 'POST':
-        newItem = Item(name=request.form['name'], description=request.form['description'],category_id=category_id)
+        newItem = Item(name=request.form['name'],
+                    description=request.form['description'],
+                    category_id=category_id)  # NOQA
         session.add(newItem)
         session.commit()
         return redirect(url_for('showItems', category_id=category_id))
@@ -273,7 +295,10 @@ def newItem(category_id):
         return render_template('newItem.html', category_id=category_id)
 
 # Edit an item within a category
-@app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
+
+
+@app.route('/category/<int:category_id>/item/<int:item_id>/edit/',
+            methods=['GET', 'POST'])  # NOQA
 def editItem(category_id, item_id):
     itemToEdit = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
@@ -285,10 +310,14 @@ def editItem(category_id, item_id):
         session.commit()
         return redirect(url_for('showItems', category_id=category_id))
     else:
-        return render_template('editItem.html', category_id=category_id, item_id=item_id, item=itemToEdit)
+        return render_template('editItem.html', category_id=category_id,
+                                item_id=item_id, item=itemToEdit)  # NOQA
 
 # Delete an item in a category
-@app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
+
+
+@app.route('/category/<int:category_id>/item/<int:item_id>/delete/',
+            methods=['GET', 'POST'])  # NOQA
 def deleteItem(category_id, item_id):
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
@@ -301,4 +330,4 @@ def deleteItem(category_id, item_id):
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host = '0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000)

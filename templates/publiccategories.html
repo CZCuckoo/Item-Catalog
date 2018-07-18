@@ -3,12 +3,16 @@
 	<head>
     <meta charset="UTF-8">
     <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 	</head>
 	<body>
+		<p><a href="{{url_for('showLogin')}}">Log In</a></p>
+		<h1>Item Catalog</h1>
+		<h2>Categories</h2>
+
 		{% for category in categories %}
 		<div>
-			<p>{{category.name}}</p>
+			<p><b>{{category.name}}</b></p>
 			<p>{{category.description}}</p>
 			<a href="{{url_for('showItems', category_id = category.id)}}">Items</a><br>
 		</div>
