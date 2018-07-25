@@ -1,0 +1,14 @@
+<header class="header-title">
+	<div>
+		<h1>Item Catalog</h1>
+	</div>
+	<div class="navigation">
+				<button type="button"><a href="{{url_for("showCategories")}}">Home</a></button>
+				{%if "username" not in session %}
+				<button type="button"><a href="{{url_for("showLogin")}}">Login </a></button>
+				{% else %}
+				<button type="button"><a href="{{url_for("gdisconnect")}}">Logout </a></button>
+				{% endif %}
+			</div>
+</header>
+<hr>

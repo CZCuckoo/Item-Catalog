@@ -1,22 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta charset="UTF-8">
-    <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-	</head>
+{% extends "base.html" %}
+{% block content %}
+{% include "header.html"%}
 	<body>
-		<p><a href="{{url_for('showLogin')}}">Log In</a></p>
-		<h1>Item Catalog</h1>
 		<h2>Categories</h2>
 
 		{% for category in categories %}
 		<div>
 			<p><b>{{category.name}}</b></p>
-			<p>{{category.description}}</p>
+			<p class="description">{{category.description}}</p>
 			<a href="{{url_for('showItems', category_id = category.id)}}">Items</a><br>
 		</div>
 		{% endfor %}
 		<br>
 	</body>
-</html>
+{% endblock %}

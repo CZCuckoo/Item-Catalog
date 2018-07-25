@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta charset="UTF-8">
-    <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
-	</head>
+{% extends "base.html" %}
+{% block content %}
+{% include "header.html"%}
 	<body>
 		<div>
 			<h1>Items</h1>
@@ -14,14 +10,8 @@
 			{{item.description}}<br>
 			<a href='{{url_for('editItem', category_id = category.id, item_id = item.id)}}'>Edit</a><br>
 			<a href='{{url_for('deleteItem', category_id = category.id, item_id = item.id)}}'>Delete</a><br><br>
-
 			{% endfor %}
-
 			<p><a href="{{url_for('newItem', category_id = category.id)}}">Add new item</a></p>
-
-
-
 		</div>
-
 	</body>
-</html>
+{% endblock %}

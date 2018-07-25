@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta charset="UTF-8">
-    <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
-	</head>
+{% extends "base.html" %}
+{% block content %}
+{% include "header.html"%}
 	<body>
 		<div>
 			<h1>Items</h1>
       <h2>{{category.name}}</h2>
 			{% for item in items %}
-			<b>{{item.name}}</b><br><br>
-			{{item.description}}<br><br>
+			<p>{{item.name}}</p>
+			<p class="description">{{item.description}}</p>
 			{% endfor %}
 		</div>
 
 	</body>
-</html>
+{% endblock %}

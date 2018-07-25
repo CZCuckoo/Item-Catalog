@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta charset="UTF-8">
-    <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
-	</head>
+{% extends "base.html" %}
+{% block content %}
+{% include "header.html"%}
 	<body>
 		<div>
 			<h2>Delete Item</h2>
@@ -16,4 +12,4 @@
 		</div>
 
 	</body>
-</html>
+{% endblock %}

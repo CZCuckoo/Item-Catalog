@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta charset="UTF-8">
-    <title>Item Catalog</title>
-		<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
-	</head>
+{% extends "base.html" %}
+{% block content %}
+{% include "header.html"%}
 	<body>
-
-			<p><a href="{{url_for('gdisconnect')}}">Log out</a></p>
-
-		<h1>Item Catalog</h1>
 		<h2>Categories</h2>
 		{% for category in categories %}
 		<div>
@@ -23,4 +15,4 @@
 		<br>
 		<a href="{{url_for('newCategory')}}">Add a new category</a>
 	</body>
-</html>
+{% endblock %}
