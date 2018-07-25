@@ -6,7 +6,7 @@
 
 		{% for category in categories %}
 		<div>
-			<p><b>{{category.name}}</b></p>
+			<p class="bold">{{category.name}}</p>
 			<p class="description">{{category.description}}</p>
 			<a href="{{url_for('showItems', category_id = category.id)}}">Items</a><br>
 		</div>
