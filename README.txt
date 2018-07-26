@@ -1,6 +1,18 @@
-This project is an application that provides a list of items within a variety
-of categories, as well as provide a user registration and authentication
-system. Registered users will have the ability to post, edit, and
-delete their own items.
+#Item Catalog
 
-This project was created for the Udacity Full Stack Web Developer Nanodegree.
+##Description
+
+The Item Catalog hosted here is an application developed for the Udacity Full Stack Web Developer Nanodegree Program.
+It provides a list of items within a set category, as well as the ability to modify that list in various ways.
+It is a RESTful application using the Python framework Flask, as well as implementing third-party OAuth authentication.
+
+##Instructions
+
+This application requires an OAuth 2.0 client ID from the Google dashboard. In order to generate your own, please follow these steps.
+* Log in to Google
+* Navigate to the Google Cloud Platform credentials page (https://console.cloud.google.com/apis/credentials). 
+* Click "Create credentials," selecting "OAuth Client ID"
+* Choose "Web application"
+* Select a name for the apps
+* Add http://localhost:8000 to teh Authorized JavaScript origins and Redirects.
+* Download JSON credentials, and save it in the application directory as "google_client_secrets.json"
