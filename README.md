@@ -16,6 +16,8 @@ This project requires the following
 * SQLAlchemy
 * oauth2client
 
+### Google Credentials
+
 This application requires an OAuth 2.0 client ID from the Google dashboard. In order to generate your own, please follow these steps.
 * Log in to Google
 * Navigate to the Google Cloud Platform credentials page (https://console.cloud.google.com/apis/credentials).
