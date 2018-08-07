@@ -149,17 +149,17 @@ def gconnect():
               'border-radius: 150px;' \
               '-webkit-border-radius: 150px;' \
               '-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
     print("done!")
     return output
 
 
 def createUser(login_session):
-    newUser = User_info(name=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
+    newUser = User_info(name=login_session['username'],
+                        email=login_session['email'],
+                        picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(User_info).filter_by(email=login_session['email']).one()
+    user = session.query(User_info).filter_by(email=login_session['email']).first()
     return user.id
 
 
@@ -170,7 +170,7 @@ def getUserInfo(user_id):
 
 def getUserID(email):
     try:
-        user = session.query(User).filter_by(email=email).one()
+        user = session.query(User_info).filter_by(email=email).one()
         return user.id
     except:
         return None
@@ -180,14 +180,7 @@ def getUserID(email):
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print('Access Token is None')
-        response = make_response(json.dumps('Current user not connected.'),
-                                 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    print('In gdisconnect access token is %s'), access_token
-    print('User name is: ')
-    print(login_session['username'])
+        return redirect(url_for('showCategories'))
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']  # NOQA
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -199,15 +192,9 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
         return redirect(url_for('showCategories'))
     else:
-        response = make_response(json.dumps
-                                 ('Failed to revoke token for given user.',
-                                  400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        return redirect(url_for('showCategories'))
 
 # ______________________________________________________________________________
 # JSON routes
@@ -296,7 +283,6 @@ def deleteCategory(category_id):
     else:
         return render_template('deleteCategory.html',
                                category=categoryToDelete)
-    return render_template('deleteCategory.html')
 
 # ______________________________________________________________________________
 # Item routes

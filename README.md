@@ -1,12 +1,10 @@
 # Item Catalog
 
-## Description
+## Overview
 
 The Item Catalog hosted here is an application developed for the Udacity Full Stack Web Developer Nanodegree Program.
 It provides a list of items within a set category, as well as the ability to modify that list in various ways.
 It is a RESTful application using the Python framework Flask, as well as implementing third-party OAuth authentication.
-
-## Instructions
 
 ### Dependencies
 
