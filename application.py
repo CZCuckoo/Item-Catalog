@@ -254,6 +254,7 @@ def newCategory():
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
     if 'username' not in login_session:
+        flash('You must be logged in to edit categories')
         return redirect(url_for('showCategories'))
     editedCategory = session.query(Category).filter_by(id=category_id).one()
 
@@ -279,6 +280,7 @@ def editCategory(category_id):
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     if 'username' not in login_session:
+        flash('You must be logged in to delete categories')
         return redirect(url_for('showCategories'))
     categoryToDelete = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != categoryToDelete.user_id:
@@ -320,6 +322,7 @@ def showItems(category_id):
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
     if 'username' not in login_session:
+        flash('You must be logged in to add items')
         return redirect(url_for('showItems', category_id=category_id))
     if request.method == 'POST':
         newItem = Item(name=request.form['name'],
@@ -339,6 +342,7 @@ def newItem(category_id):
            methods=['GET', 'POST'])
 def editItem(category_id, item_id):
     if 'username' not in login_session:
+        flash('You must be logged in to edit items')
         return redirect(url_for('showItems', category_id=category_id))
     itemToEdit = session.query(Item).filter_by(id=item_id).one()
     if login_session['user_id'] != itemToEdit.user_id:
@@ -363,6 +367,7 @@ def editItem(category_id, item_id):
            methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
     if 'username' not in login_session:
+        flash('You must be logged in to delete items')
         return redirect(url_for('showItems', category_id=category_id))
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
     if login_session['user_id'] != itemToDelete.user_id:
