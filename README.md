@@ -24,3 +24,5 @@ This application requires an OAuth 2.0 client ID from the Google dashboard. In o
 * Select a name for the apps
 * Add http://localhost:8000 to the Authorized JavaScript origins and Redirects.
 * Download JSON credentials, and save it in the application directory as "google_client_secrets.json"
+
+### Generating a Database
