@@ -1,0 +1,19 @@
+{
+  "name": "item-catalog",
+  "version": "1.0.0",
+  "description": "The Item Catalog hosted here is an application developed for the Udacity Full Stack Web Developer Nanodegree Program.\r It provides a list of items within a set category, as well as the ability to modify that list in various ways.\r It is a RESTful application using the Python framework Flask, as well as implementing third-party authentication via Google OAuth.\r All data is kept in an sqlite database.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CZCuckoo/Item-Catalog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CZCuckoo/Item-Catalog/issues"
+  },
+  "homepage": "https://github.com/CZCuckoo/Item-Catalog#readme"
+}

@@ -256,6 +256,11 @@ def editCategory(category_id):
     if 'username' not in login_session:
         return redirect(url_for('showCategories'))
     editedCategory = session.query(Category).filter_by(id=category_id).one()
+
+    if login_session['user_id'] != editedCategory.user_id:
+        flash('You are not authorized to edit this category')
+        return redirect(url_for('showItems', category_id=category_id))
+
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
@@ -276,6 +281,9 @@ def deleteCategory(category_id):
     if 'username' not in login_session:
         return redirect(url_for('showCategories'))
     categoryToDelete = session.query(Category).filter_by(id=category_id).one()
+    if login_session['user_id'] != categoryToDelete.user_id:
+        flash('You are not authorized to delete this category')
+        return redirect(url_for('showItems', category_id=category_id))
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
@@ -316,6 +324,7 @@ def newItem(category_id):
     if request.method == 'POST':
         newItem = Item(name=request.form['name'],
                        description=request.form['description'],
+                       user_id=login_session['user_id'],
                        category_id=category_id)
         session.add(newItem)
         session.commit()
@@ -332,6 +341,9 @@ def editItem(category_id, item_id):
     if 'username' not in login_session:
         return redirect(url_for('showItems', category_id=category_id))
     itemToEdit = session.query(Item).filter_by(id=item_id).one()
+    if login_session['user_id'] != itemToEdit.user_id:
+        flash('You are not authorized to edit this item')
+        return redirect(url_for('showItems', category_id=category_id))
     if request.method == 'POST':
         if request.form['name']:
             itemToEdit.name = request.form['name']
@@ -353,6 +365,9 @@ def deleteItem(category_id, item_id):
     if 'username' not in login_session:
         return redirect(url_for('showItems', category_id=category_id))
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
+    if login_session['user_id'] != itemToDelete.user_id:
+        flash('You are not authorized to delete this item')
+        return redirect(url_for('showItems', category_id=category_id))
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
